@@ -7,5 +7,9 @@ This is for tech learning and experience sharing, welcome and let's get hands di
 
 - [Spark Learning](/learning/spark.md)
 
+## Experience Sharing
+
+- [Get started with Git](/sharing/git.md)
+
 ## Wiki
 
