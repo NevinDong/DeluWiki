@@ -9,6 +9,7 @@ This is for tech learning and experience sharing, welcome and let's get hands di
 
 ## Experience Sharing
 
+- [Kylin Cubing on Microsoft Azure](/sharing/kylin.md)
 - [Get started with Git](/sharing/git.md)
 
 ## Wiki
