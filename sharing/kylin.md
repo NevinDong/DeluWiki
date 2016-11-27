@@ -15,7 +15,7 @@ Hadoop cluster and Hbase cluster are deployed with Azure HDInsight. HDInsight is
 
 One big difference from HDP is that Azure HDinsight uses Azure Blob storage as the default file system. Up till now, some of you may wonder how to integrate your client app with Azure Blob storage, or even have no intention/time to ramp up a new storage system.
 
-No worries! HDInsight provides access to the DFS locally attached to the compute nodes as below. You can keep the same way to integrate with hdfs in your client app.
+No worries! HDInsight provides access to the DFS locally attached to the compute nodes as below. So you can integrate with hdfs in your client application as before.
 
 `hdfs://<namenodehost>/<path>`
 
@@ -23,9 +23,16 @@ In addition, HDInsight provides the ability to access data stored in Azure Blob 
 
 `wasb[s]://<containername>@<accountname>.blob.core.windows.net/<path>`
 
-We need configure the defaultFS in kylin.properties to `wasb[s]://<containername>@<accountname>.blob.core.windows.net/` and we can create a External Hive table as below, then data will be moved from local hdfs in Hadoop cluster to Azure Blob storage in *Create Intermediate Flat Hive Table* step in cube build process.
+To make Kylin work on Azure HDInsight, I've added the PROPERTY KEYS below in kylin.properties, and modified KylinConfigBase.java and HadoopUtil.java to init these properties in Hadoop Configuration. With these changes, all data generated in cube build will be saved on Azure Blob storage.
+```properties
+kylin.fs.defaultFS = wasb[s]://<containername>@<accountname>.blob.core.windows.net/
+azure.account = <accountname>
+fs.azure.account.key.<accountname>.blob.core.windows.net = <accountkey>
+```
+
+And your client application can still save data on hdfs as before. All you have to do is to create an External Hive table as below and specify your local hdfs path as data source, and data will be moved from local hdfs in Hadoop cluster to Azure Blob storage in *Create Intermediate Flat Hive Table* step in cube build process.
 ```hivetable
-CREATE EXTERNAL TABLE RTKPIRawData.FactAdLevel(
+CREATE EXTERNAL TABLE DatabaseName.TableName(
 field1 timestamp,
 ... ,
 fieldN int
@@ -47,7 +54,7 @@ Staging env shares the same underlying systems (Hive/Hbase) with Prod env, so we
 
 Kylin Cubing Flow
 ----------------------------
-I'll give a example below to demonstrate a incremental build every five minutes for real-time analysis.
+I'll present an example below to demonstrate a incremental build every five minutes for real-time analysis.
 
 ![Cube Build](../image/cube-build.png)
 
